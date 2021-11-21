@@ -3,9 +3,9 @@ import { Container, Form, Row, Col, Button } from "react-bootstrap";
 import ElectionCard from "./ElectionCard";
 import web3 from "../web3.js";
 
-const factoryAddress = "0x99F81F365B7f9EEdB84b54af5C3aC6A163194feB";
-const compiledFactory = require("../build/ElectionFactory.json");
-const compiledElection = require("../build/Election.json");
+const factoryAddress = "0x5B1287fbad7B49c368c0E252cEc6fd2e839c9eE6";
+const compiledFactory = require("../ethereum/build/ElectionFactory.json");
+const compiledElection = require("../ethereum/build/Election.json");
 
 const Elections = () => {
   const [electionsData, setElectionsData] = useState([]);

@@ -3,7 +3,7 @@ import { Container, Form, Row, Col, Button, Carousel } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import web3 from "../web3.js";
 
-const compiledElection = require("../build/Election.json");
+const compiledElection = require("../ethereum/build/Election.json");
 
 const ElectionCard = (props) => {
   const [parties, setParties] = useState([]);

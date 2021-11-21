@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import web3 from "../web3.js";
-const compiledElection = require("../build/Election.json");
+const compiledElection = require("../ethereum/build/Election.json");
 
 const Election = (props) => {
   const [electionName, setElectionName] = useState("");
