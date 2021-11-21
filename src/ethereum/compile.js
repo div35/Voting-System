@@ -5,7 +5,7 @@ const solc = require('solc');
 const buildPath = path.resolve(__dirname, "build");
 fs.removeSync(buildPath);
 
-const campaignPath = path.resolve(__dirname, 'Election.sol');
+const campaignPath = path.resolve(__dirname,'contracts', 'Election.sol');
 const source = fs.readFileSync(campaignPath, 'utf-8');
 
 var input = {
@@ -29,8 +29,8 @@ var output = JSON.parse(solc.compile(JSON.stringify(input)));
 fs.ensureDir(buildPath);
 
 for (var contractName in output.contracts['Election.sol']) {
-    fs.outputJSONSync(
-        path.resolve(buildPath,contractName+'.json'),
-        output.contracts['Election.sol'][contractName]
-    )
-  }
+  fs.outputJSONSync(
+      path.resolve(buildPath,contractName+'.json'),
+      output.contracts['Election.sol'][contractName]
+  )
+}

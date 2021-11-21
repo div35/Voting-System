@@ -58,18 +58,20 @@ contract Election{
         string leaderName;
         uint membersCount;
         string region;
+        string image;
     }
     
     Party[] parties;
     uint[] voteCount;
     
-    function addParty(string memory partyName, string memory leaderName, uint membersCount, string memory region) public restricted{
+    function addParty(string memory partyName, string memory leaderName, uint membersCount, string memory region, string memory image) public restricted{
         require(!isStarted);
         Party memory party = Party({
             name: partyName,
             leaderName: leaderName,
             membersCount: membersCount,
-            region: region
+            region: region,
+            image: image
         });
         
         parties.push(party);
