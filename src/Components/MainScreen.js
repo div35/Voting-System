@@ -8,7 +8,11 @@ const compiledFactory = require("../ethereum/build/ElectionFactory.json");
 const compiledElection = require("../ethereum/build/Election.json");
 
 const Elections = () => {
+  const [err, setErr] = useState(null);
   const [electionsData, setElectionsData] = useState([]);
+  const [create, setCreate] = useState(false);
+  const [elecName, setElecName] = useState("");
+  const [managerName, setManagerName] = useState("");
   useEffect(async () => {
     const contract = new web3.eth.Contract(
       JSON.parse(JSON.stringify(compiledFactory.abi)),
@@ -19,24 +23,111 @@ const Elections = () => {
     setElectionsData(elections);
   }, []);
 
-  return (
+  const createElectionHandler = (e) => {
+    e.preventDefault();
+    setErr(null);
+    create ? setCreate(false) : setCreate(true);
+  };
+
+  const submitFormHandler = (e) => {
+    e.preventDefault();
+    setErr(null);
+    try {
+    } catch (err) {
+      setErr(err);
+    }
+
+    setCreate(false);
+  };
+
+  const createForm = (
     <Container>
       <Row>
         <Col></Col>
+        <Col className="border rounded py-3 px-4">
+          <Form onSubmit={submitFormHandler}>
+            <Form.Group className="mx-3 mt-2 mb-3" controlId="formBasicEmail">
+              <Form.Label>
+                <b>Election Name</b>
+              </Form.Label>
+              <Row>
+                <Col>
+                  {" "}
+                  <Form.Control
+                    required
+                    type="electionName"
+                    placeholder="Enter Name of the Election"
+                    value={elecName}
+                    onChange={(e) => {
+                      setElecName(e.target.value);
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Form.Group>
+
+            <Form.Group className="mx-3" controlId="formBasicPassword">
+              <Form.Label>
+                <b>Manager Name</b>
+              </Form.Label>
+              <Row>
+                <Col>
+                  <Form.Control
+                    required
+                    type="managerName"
+                    placeholder="Enter Name of the Manager"
+                    value={managerName}
+                    onChange={(e) => {
+                      setManagerName(e.target.value);
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Form.Group>
+            {err ? (
+              <p style={{ color: "red" }} className="mt-3">
+                {err}
+              </p>
+            ) : null}
+            <Button className="m-2" variant="primary" type="submit">
+              Create
+            </Button>
+          </Form>
+        </Col>
+        <Col></Col>
+      </Row>
+    </Container>
+  );
+
+  return (
+    <div
+      className="pt-3"
+      style={{
+        height: "100vh",
+        backgroundColor: create ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0)",
+        backdropFilter: "blur(15px)",
+      }}
+    >
+      <Row>
+        <Col></Col>
         <Col md="6">
-          <h1 className="text-center">Ongoing Elections</h1>
+          <h1 className="text-center">
+            {create ? "Create A New Election" : "Ongoing Elections"}
+          </h1>
         </Col>
         <Col md="3">
-          <Button variant="danger">Create Election</Button>
+          <Button variant="danger" onClick={(e) => createElectionHandler(e)}>
+            {create ? "Cancel" : "Create Election"}
+          </Button>
         </Col>
       </Row>
+      <br />
+      {create ? createForm : null}
       <Container>
         {electionsData &&
-          electionsData.map((d) => (
-            <ElectionCard data={d} key={d.name} />
-          ))}
+          electionsData.map((d) => <ElectionCard data={d} key={d.name} />)}
       </Container>
-    </Container>
+    </div>
   );
 };
 

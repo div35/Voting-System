@@ -8,7 +8,7 @@ const NavHeading = () => {
         bg="dark"
         variant="dark"
         collapseOnSelect
-        className="rounded-bottom mb-3"
+        className="rounded-bottom"
       >
         <Container>
           <Navbar.Brand as={NavLink} to="/">
