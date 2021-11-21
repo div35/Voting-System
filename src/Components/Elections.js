@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Container, Form, Row, Col, Button } from "react-bootstrap";
 import ElectionCard from "./ElectionCard";
-import web3 from '../web3.js';
+import web3 from "../web3.js";
 
 const factoryAddress = "0x99F81F365B7f9EEdB84b54af5C3aC6A163194feB";
-const compiledFactory = require('../build/ElectionFactory.json');
-const compiledElection = require('../build/Election.json');
+const compiledFactory = require("../build/ElectionFactory.json");
+const compiledElection = require("../build/Election.json");
 
 const Elections = () => {
   const data = [
@@ -41,29 +41,19 @@ const Elections = () => {
     },
   ];
 
-  const [err, setErr] = useState(null); 
+  const [err, setErr] = useState(null);
   const [electionsData, setElectionsData] = useState([]);
-  useEffect(async ()=>{
-    try{
-      await window.ethereum.send('eth_requestAccounts');
+  useEffect(async () => {
+    const accounts = await web3.eth.getAccounts();
 
-      const accounts = await web3.eth.getAccounts();
-			
-      const contract = new web3.eth.Contract(
-        JSON.parse(JSON.stringify(compiledFactory.abi)),
-        factoryAddress
-      );
+    const contract = new web3.eth.Contract(
+      JSON.parse(JSON.stringify(compiledFactory.abi)),
+      factoryAddress
+    );
 
-      const elections = await contract.methods.getElections().call();
-      setElectionsData(elections);
-      console.log(elections);
-    }catch(err){
-      setErr(err);
-      console.log(err);
-    }
-
-
-  }, [])
+    const elections = await contract.methods.getElections().call();
+    setElectionsData(elections);
+  }, []);
 
   return (
     <Container>
@@ -77,8 +67,9 @@ const Elections = () => {
         </Col>
       </Row>
       <Container>
-        {data.map((d) => (
-          <ElectionCard data={d} />
+        {electionsData && electionsData.map((d) => (
+          // console.log(electionsData)
+          <ElectionCard data={d} key={d.name} />
         ))}
       </Container>
     </Container>

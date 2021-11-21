@@ -3,13 +3,14 @@ import { Container, Form, Row, Col, Button, Carousel } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
 const ElectionCard = (props) => {
-  const partiesCrousel = props.data.parties.map((p) => {
-    return (
-      <Carousel.Item className="mb-3">
-        <h5>{p}</h5>
-      </Carousel.Item>
-    );
-  });
+  // const partiesCrousel = props.data.parties.map((p) => {
+  //   return (
+  //     <Carousel.Item className="mb-3" key={p}>
+  //       <h5>{p}</h5>
+  //     </Carousel.Item>
+  //   );
+  // });
+  console.log(props.data)
   return (
     <Container>
       <Row className="border rounded py-2 my-4">
@@ -32,7 +33,7 @@ const ElectionCard = (props) => {
           </Row>
           
           <Row className="my-2">
-            <Carousel fade>{partiesCrousel}</Carousel>
+            {/* <Carousel fade>{partiesCrousel}</Carousel> */}
           </Row>
           <Row>
             <p>Managed By: {props.data.manager}</p>
