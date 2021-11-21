@@ -3,7 +3,6 @@ import { Container, Form, Row, Col, Button, Carousel } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import web3 from "../web3.js";
 
-
 const compiledElection = require("../build/Election.json");
 
 const ElectionCard = (props) => {
@@ -16,7 +15,7 @@ const ElectionCard = (props) => {
     );
   });
 
-  useEffect(async ()=>{
+  useEffect(async () => {
     const address = props.data[0];
 
     const contract = new web3.eth.Contract(
@@ -25,7 +24,7 @@ const ElectionCard = (props) => {
     );
 
     const partiesData = await contract.methods.getParties().call();
-    setParties(partiesData)
+    setParties(partiesData);
   }, []);
 
   return (
@@ -48,20 +47,21 @@ const ElectionCard = (props) => {
               {props.data.name}
             </h2>
           </Row>
-          
-          <Row className="my-2">
-            {<Carousel>{partiesCrousel}</Carousel> }
-          </Row>
+
+          <Row className="my-2">{<Carousel>{partiesCrousel}</Carousel>}</Row>
           <Row>
-            <p>Managed By: {props.data.manager}</p>
+            <p>
+              Managed By: <b>{props.data.manager}</b>
+            </p>
           </Row>
         </Col>
         <Col md="4">
-          <NavLink
-            to={`/election/${props.data.address}`}
-            style={{ textDecoration: "none" }}
-          >
-            <Button variant="primary" type="submit" style={{margin:"80px 0px"}}>
+          <NavLink to={`/${props.data.add}`} style={{ textDecoration: "none" }}>
+            <Button
+              variant="light"
+              type="submit"
+              style={{ margin: "80px 0px" }}
+            >
               Ready To Cast Vote
             </Button>
           </NavLink>

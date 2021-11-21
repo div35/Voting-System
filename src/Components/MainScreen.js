@@ -8,11 +8,8 @@ const compiledFactory = require("../build/ElectionFactory.json");
 const compiledElection = require("../build/Election.json");
 
 const Elections = () => {
-  
-  const [err, setErr] = useState(null);
   const [electionsData, setElectionsData] = useState([]);
   useEffect(async () => {
-
     const contract = new web3.eth.Contract(
       JSON.parse(JSON.stringify(compiledFactory.abi)),
       factoryAddress
@@ -34,10 +31,10 @@ const Elections = () => {
         </Col>
       </Row>
       <Container>
-        {electionsData && electionsData.map((d) => (
-          // console.log(electionsData)
-          <ElectionCard data={d} key={d.name} />
-        ))}
+        {electionsData &&
+          electionsData.map((d) => (
+            <ElectionCard data={d} key={d.name} />
+          ))}
       </Container>
     </Container>
   );
