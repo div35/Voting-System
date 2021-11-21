@@ -11,8 +11,8 @@ contract ElectionFactory{
     
     ElectionMeta[] list;
     
-    function createElection(string memory name, string memory manager) public{
-        Election election = new Election(msg.sender, name);
+    function createElection(string memory name, string memory manager, uint time) public{
+        Election election = new Election(msg.sender, name, time);
         
         ElectionMeta memory obj = ElectionMeta({
             add: address(election),
@@ -39,18 +39,25 @@ contract Election{
     
     bool isCompleted;
     bool isStarted;
+
+    uint public createdAt;
+    uint public startedAt;
+    uint public endAt;
     
     modifier restricted() {
         require(msg.sender == manager);
         _;
     }
     
-    constructor(address sender, string memory n){
+    constructor(address sender, string memory n, uint time){
         manager = sender;
         isCompleted = false;
         totalVotes = 0;
         isStarted = false;
         name = n;
+        createdAt = time;
+        startedAt = 0;
+        endAt = 0;
     }
 
     struct Party{
@@ -93,7 +100,7 @@ contract Election{
     }
     
     function getPartyDetails(uint partyIndex) public view returns(Party memory){
-        Party storage party= parties[partyIndex];
+        Party storage party = parties[partyIndex];
         return party;
     }
     
@@ -107,9 +114,11 @@ contract Election{
         isCompleted = true;
     }
     
-    function startElection() public restricted {
+    function startElection(uint time, uint willEndAt) public restricted {
         require(isCompleted==false);
         require(isStarted==false);
         isStarted = true;
+        startedAt = time;
+        endAt = willEndAt;
     }
 }
