@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import Login from "./Components/Login";
 import NavHeading from "./Components/NavHeading";
 import Elections from "./Components/MainScreen";
-import Election from "./Components/SecondaryScreen";
+import Election from "./Components/Election";
 function App() {
   return (
     <BrowserRouter>

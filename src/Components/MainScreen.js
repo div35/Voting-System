@@ -22,7 +22,8 @@ const Elections = () => {
   );
 
   useEffect(async () => {
-    const elections = await factory.methods.getElections().call();
+    let elections = await factory.methods.getElections().call();
+    elections = elections.slice().reverse();
     setElectionsData(elections);
   }, []);
 
@@ -47,7 +48,8 @@ const Elections = () => {
         gas: "3000000",
       });
 
-      const elections = await factory.methods.getElections().call();
+      let elections = await factory.methods.getElections().call();
+      elections = elections.slice().reverse();      
       setElectionsData(elections);
 
       setMessage("Election Created Successfully!!");

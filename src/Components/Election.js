@@ -33,7 +33,7 @@ const Election = (props) => {
     props.history.push(`/${props.match.params.id}/verify/${id}`);
   };
 
-  useEffect(async () => {
+  const refresh = async () => {
     const address = props.match.params.id;
 
     const contract = new web3.eth.Contract(
@@ -49,6 +49,10 @@ const Election = (props) => {
 
     const partiesData = await contract.methods.getParties().call();
     setParties(partiesData);
+  }
+
+  useEffect(async () => {
+    refresh();
   }, []);
 
   const addPartyHandler = (e) => {
@@ -64,7 +68,20 @@ const Election = (props) => {
     setMessage(null);
     setLoading(true);
     try {
-      
+      await window.ethereum.send("eth_requestAccounts");
+      const accounts = await web3.eth.getAccounts();
+
+      const electionAddress = props.match.params.id;
+      const election = new web3.eth.Contract(
+        JSON.parse(JSON.stringify(compiledElection.abi)),
+        electionAddress
+      );
+      await election.methods.addParty(partyName, leaderName, memberCount, region, image).send({
+        from: accounts[0],
+        gas: '3000000'
+      });
+
+      refresh();
       setMessage("Party Added Successfully!!");
     } catch (err) {
       console.log(err);
