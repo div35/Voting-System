@@ -9,35 +9,53 @@ const compiledElection = require("../ethereum/build/Election.json");
 
 const Elections = () => {
   const [err, setErr] = useState(null);
+  const [message, setMessage] = useState(null);
   const [electionsData, setElectionsData] = useState([]);
   const [create, setCreate] = useState(false);
   const [elecName, setElecName] = useState("");
   const [managerName, setManagerName] = useState("");
-  useEffect(async () => {
-    const contract = new web3.eth.Contract(
-      JSON.parse(JSON.stringify(compiledFactory.abi)),
-      factoryAddress
-    );
 
-    const elections = await contract.methods.getElections().call();
+  const factory = new web3.eth.Contract(
+    JSON.parse(JSON.stringify(compiledFactory.abi)),
+    factoryAddress
+  );
+
+  useEffect(async () => {
+    const elections = await factory.methods.getElections().call();
     setElectionsData(elections);
   }, []);
 
   const createElectionHandler = (e) => {
     e.preventDefault();
     setErr(null);
+    setMessage(null);
     create ? setCreate(false) : setCreate(true);
   };
 
-  const submitFormHandler = (e) => {
+  const submitFormHandler = async (e) => {
     e.preventDefault();
     setErr(null);
+    setMessage(null);
     try {
+
+      await window.ethereum.send('eth_requestAccounts');
+      const accounts = await web3.eth.getAccounts();
+
+      await factory.methods.createElection(elecName, managerName).send({
+        from: accounts[0],
+        gas: '3000000'
+      });
+
+      const elections = await factory.methods.getElections().call();
+      setElectionsData(elections);
+
+      setMessage("Election Created Successfully!!");
+
     } catch (err) {
-      setErr(err);
+      console.log(err);
+      setErr(err.message);
     }
 
-    setCreate(false);
   };
 
   const createForm = (
@@ -85,6 +103,7 @@ const Elections = () => {
               </Row>
             </Form.Group>
             {err ? <p style={{ color: "red" }}>{err}</p> : null}
+            {message ? <p style={{ color: "green" }}>{message}</p> : null}
             <Button className="m-2" variant="primary" type="submit">
               Create
             </Button>
