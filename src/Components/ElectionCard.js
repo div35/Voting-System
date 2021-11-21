@@ -7,13 +7,20 @@ const compiledElection = require("../ethereum/build/Election.json");
 
 const ElectionCard = (props) => {
   const [parties, setParties] = useState([]);
-  const partiesCrousel = parties.map((p) => {
-    return (
-      <Carousel.Item className="mb-3" key={p[0]}>
-        <h5>{p[0]}</h5>
+  const partiesCrousel =
+    parties.length == 0 ? (
+      <Carousel.Item className="mb-3">
+        <h5 style={{color:"#e0e0e0"}}>No Parties Are Added Yet</h5>
       </Carousel.Item>
+    ) : (
+      parties.map((p) => {
+        return (
+          <Carousel.Item className="mb-3" key={p[0]}>
+            <h5 style={{color:"#e0e0e0"}}>{p[0]}</h5>
+          </Carousel.Item>
+        );
+      })
     );
-  });
 
   useEffect(async () => {
     const address = props.data[0];
@@ -62,7 +69,7 @@ const ElectionCard = (props) => {
               type="submit"
               style={{ margin: "80px 0px" }}
             >
-              Ready To Cast Vote
+              Explore
             </Button>
           </NavLink>
         </Col>
