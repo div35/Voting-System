@@ -8,43 +8,10 @@ const compiledFactory = require("../build/ElectionFactory.json");
 const compiledElection = require("../build/Election.json");
 
 const Elections = () => {
-  const data = [
-    {
-      name: "Bihar State Election",
-      address: "axvt56jsgbe7j",
-      manager: "Mr. Satnam",
-      parties: ["BJP", "AAP", "Congress", "Communist Party"],
-    },
-    {
-      name: "Delhi State Election",
-      address: "hfdb45jfdgk7y",
-      manager: "Mr. Manoj",
-      parties: ["AAP", "BJP", "Congress", "Cycle Party"],
-    },
-    {
-      name: "Lok Sabha Election",
-      address: "tfgb75ufdgk5y",
-      manager: "Mr.Yogi",
-      parties: ["AAP", "BJP", "Congress", "Mamta Party", "Faltu Party"],
-    },
-    {
-      name: "Kasol City Election",
-      address: "6fgd78ufdgk7y",
-      manager: "Its Your Boy Jack",
-      parties: [
-        "Breezer Party",
-        "Cocain Party",
-        "Nasha Party",
-        "Andhi Party",
-        "Ganjha Party",
-      ],
-    },
-  ];
-
+  
   const [err, setErr] = useState(null);
   const [electionsData, setElectionsData] = useState([]);
   useEffect(async () => {
-    const accounts = await web3.eth.getAccounts();
 
     const contract = new web3.eth.Contract(
       JSON.parse(JSON.stringify(compiledFactory.abi)),
