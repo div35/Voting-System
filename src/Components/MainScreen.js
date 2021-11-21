@@ -70,7 +70,7 @@ const Elections = () => {
               <Form.Label>
                 <b>Manager Name</b>
               </Form.Label>
-              <Row>
+              <Row className="mb-3">
                 <Col>
                   <Form.Control
                     required
@@ -84,11 +84,7 @@ const Elections = () => {
                 </Col>
               </Row>
             </Form.Group>
-            {err ? (
-              <p style={{ color: "red" }} className="mt-3">
-                {err}
-              </p>
-            ) : null}
+            {err ? <p style={{ color: "red" }}>{err}</p> : null}
             <Button className="m-2" variant="primary" type="submit">
               Create
             </Button>
@@ -122,11 +118,14 @@ const Elections = () => {
         </Col>
       </Row>
       <br />
-      {create ? createForm : null}
-      <Container>
-        {electionsData &&
-          electionsData.map((d) => <ElectionCard data={d} key={d.name} />)}
-      </Container>
+      {create ? (
+        createForm
+      ) : (
+        <Container>
+          {electionsData &&
+            electionsData.map((d) => <ElectionCard data={d} key={d.name} />)}
+        </Container>
+      )}
     </div>
   );
 };
