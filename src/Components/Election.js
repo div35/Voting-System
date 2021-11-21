@@ -17,6 +17,8 @@ const Election = (props) => {
   const [loading, setLoading] = useState(false);
   const [create, setCreate] = useState(false);
 
+  const [isManager, setIsManager] = useState(false);
+
   const [partyName, setPartyName] = useState("");
   const [leaderName, setLeaderName] = useState("");
   const [memberCount, setMemberCount] = useState(0);
@@ -33,13 +35,23 @@ const Election = (props) => {
     props.history.push(`/${props.match.params.id}/verify/${id}`);
   };
 
-  const refresh = async () => {
-    const address = props.match.params.id;
+  const address = props.match.params.id;
 
-    const contract = new web3.eth.Contract(
-      JSON.parse(JSON.stringify(compiledElection.abi)),
-      address
-    );
+  const contract = new web3.eth.Contract(
+    JSON.parse(JSON.stringify(compiledElection.abi)),
+    address
+  );
+
+  useEffect(async () => {
+    try {
+      await window.ethereum.send("eth_requestAccounts");
+      const accounts = await web3.eth.getAccounts();
+
+      const manager = await contract.methods.manager().call();
+      if (manager === accounts[0]) {
+        setIsManager(true);
+      }
+    } catch (err) {}
 
     const name = await contract.methods.name().call();
     setElectionName(name);
@@ -49,10 +61,6 @@ const Election = (props) => {
 
     const partiesData = await contract.methods.getParties().call();
     setParties(partiesData);
-  }
-
-  useEffect(async () => {
-    refresh();
   }, []);
 
   const addPartyHandler = (e) => {
@@ -76,12 +84,16 @@ const Election = (props) => {
         JSON.parse(JSON.stringify(compiledElection.abi)),
         electionAddress
       );
-      await election.methods.addParty(partyName, leaderName, memberCount, region, image).send({
-        from: accounts[0],
-        gas: '3000000'
-      });
+      await election.methods
+        .addParty(partyName, leaderName, memberCount, region, image)
+        .send({
+          from: accounts[0],
+          gas: "3000000",
+        });
 
-      refresh();
+      const partiesData = await contract.methods.getParties().call();
+      setParties(partiesData);
+
       setMessage("Party Added Successfully!!");
     } catch (err) {
       console.log(err);
@@ -232,21 +244,9 @@ const Election = (props) => {
                 className="p-2"
               />
               <Card.Body>
-                <Card.Title
-                  style={{
-                    backgroundColor: "#f3ec78",
-                    backgroundImage: "linear-gradient(45deg, #f3ec78, #af4261)",
-                    backgroundSize: "100%",
-                    WebkitBackgroundClip: "text",
-                    MozBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    MoxTextFillColor: "transparent",
-                  }}
-                >
-                  {p.name}
-                </Card.Title>
+                <Card.Title>{p.name}</Card.Title>
                 <Card.Text>
-                  Leader: <b>{p.leaderName}</b>
+                  Lead By <b style={{ color: "#e0e0e0" }}> {p.leaderName}</b>
                 </Card.Text>
                 <Button
                   variant="light"
@@ -282,13 +282,15 @@ const Election = (props) => {
             </h1>
           </Col>
           <Col md="3">
-            <Button
-              variant="danger"
-              onClick={(e) => addPartyHandler(e)}
-              disabled={loading}
-            >
-              {create ? "Cancel" : "Add Party"}
-            </Button>
+            {isManager ? (
+              <Button
+                variant="danger"
+                onClick={(e) => addPartyHandler(e)}
+                disabled={loading}
+              >
+                {create ? "Cancel" : "Add Party"}
+              </Button>
+            ) : null}
           </Col>
         </Row>
         {create ? null : (
@@ -299,15 +301,17 @@ const Election = (props) => {
             <Col></Col>
             <Col></Col>
             <Col>
-              <Button variant="danger" type="submit">
-                Declare Result
-              </Button>
+              {isManager ? (
+                <Button variant="danger" type="submit">
+                  Declare Result
+                </Button>
+              ) : null}
             </Col>
           </Row>
         )}
+        <br />
+        {create ? createForm : <Row>{partiesCards}</Row>}
       </Container>
-      <br />
-      {create ? createForm : <Row>{partiesCards}</Row>}
     </div>
   );
 };
