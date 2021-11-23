@@ -37,8 +37,8 @@ contract Election{
     address public manager;
     mapping(uint => bool) voted;
     
-    bool isCompleted;
-    bool isStarted;
+    bool public isCompleted;
+    bool public isStarted;
 
     uint public createdAt;
     uint public startedAt;

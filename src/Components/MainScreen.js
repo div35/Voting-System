@@ -3,7 +3,7 @@ import { Container, Form, Row, Col, Button, Spinner } from "react-bootstrap";
 import ElectionCard from "./ElectionCard";
 import web3 from "../web3.js";
 
-const factoryAddress = "0x5B1287fbad7B49c368c0E252cEc6fd2e839c9eE6";
+const factoryAddress = "0x959d7419d86f92E9Cccdaa10461a6a47a27B5A3C";
 const compiledFactory = require("../ethereum/build/ElectionFactory.json");
 const compiledElection = require("../ethereum/build/Election.json");
 
