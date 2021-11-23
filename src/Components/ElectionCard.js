@@ -7,16 +7,23 @@ const compiledElection = require("../ethereum/build/Election.json");
 
 const ElectionCard = (props) => {
   const [parties, setParties] = useState([]);
+
+  const [created, setCreated] = useState("");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [isStarted, setIsStarted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+
   const partiesCrousel =
     parties.length == 0 ? (
       <Carousel.Item className="mb-3">
-        <h5 style={{color:"#e0e0e0"}}>No Parties Are Added Yet</h5>
+        <h5 style={{ color: "#e0e0e0" }}>No Parties Are Added Yet</h5>
       </Carousel.Item>
     ) : (
       parties.map((p) => {
         return (
           <Carousel.Item className="mb-3" key={p[0]}>
-            <h5 style={{color:"#e0e0e0"}}>{p[0]}</h5>
+            <h5 style={{ color: "#e0e0e0" }}>{p[0]}</h5>
           </Carousel.Item>
         );
       })
@@ -32,6 +39,9 @@ const ElectionCard = (props) => {
 
     const partiesData = await contract.methods.getParties().call();
     setParties(partiesData);
+
+    setIsStarted(await contract.methods.isStarted().call());
+    setIsCompleted(await contract.methods.isCompleted().call());
   }, []);
 
   return (
@@ -56,6 +66,18 @@ const ElectionCard = (props) => {
           </Row>
 
           <Row className="my-2">{<Carousel>{partiesCrousel}</Carousel>}</Row>
+          <Row>
+            {isStarted ? (
+              <p>
+                Started On: <b>{start}</b>
+                Will End On: <b>{end}</b>
+              </p>
+            ) : (
+              <p>
+                Created On: <b>{created}</b>
+              </p>
+            )}
+          </Row>
           <Row>
             <p>
               Managed By: <b>{props.data.manager}</b>

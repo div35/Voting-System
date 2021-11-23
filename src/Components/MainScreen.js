@@ -43,7 +43,7 @@ const Elections = () => {
       await window.ethereum.send("eth_requestAccounts");
       const accounts = await web3.eth.getAccounts();
 
-      await factory.methods.createElection(elecName, managerName).send({
+      await factory.methods.createElection(elecName, managerName, new Date().getTime()).send({
         from: accounts[0],
         gas: "3000000",
       });
