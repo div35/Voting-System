@@ -12,7 +12,7 @@ const NavHeading = () => {
       >
         <Container>
           <Navbar.Brand as={NavLink} to="/">
-            E - Voting System
+          Easy-Voting.Com
           </Navbar.Brand>
         </Container>
       </Navbar>
