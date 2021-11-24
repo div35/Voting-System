@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Form, Row, Col, Button, Spinner } from "react-bootstrap";
 import ElectionCard from "./ElectionCard";
 import web3 from "../web3.js";
+import SpinnerBar from "./CustomSpinner.js";
 
 const factoryAddress = "0x959d7419d86f92E9Cccdaa10461a6a47a27B5A3C";
 const compiledFactory = require("../ethereum/build/ElectionFactory.json");
@@ -21,10 +22,14 @@ const Elections = () => {
     factoryAddress
   );
 
+  const [startLoading, setStartLoading] = useState(false);
+
   useEffect(async () => {
+    setStartLoading(true);
     let elections = await factory.methods.getElections().call();
     elections = elections.slice().reverse();
     setElectionsData(elections);
+    setStartLoading(false);
   }, []);
 
   const createElectionHandler = (e) => {
@@ -43,13 +48,15 @@ const Elections = () => {
       await window.ethereum.send("eth_requestAccounts");
       const accounts = await web3.eth.getAccounts();
 
-      await factory.methods.createElection(elecName, managerName, new Date().getTime()).send({
-        from: accounts[0],
-        gas: "3000000",
-      });
+      await factory.methods
+        .createElection(elecName, managerName, new Date().getTime())
+        .send({
+          from: accounts[0],
+          gas: "3000000",
+        });
 
       let elections = await factory.methods.getElections().call();
-      elections = elections.slice().reverse();      
+      elections = elections.slice().reverse();
       setElectionsData(elections);
 
       setMessage("Election Created Successfully!!");
@@ -105,7 +112,7 @@ const Elections = () => {
               </Row>
             </Form.Group>
             {err ? <p style={{ color: "red" }}>{err}</p> : null}
-            {message ? <p style={{ color: "green" }}>{message}</p> : null}
+            {message ? <p style={{ color: "#76ff03" }}>{message}</p> : null}
             <Button
               className="m-2"
               variant="primary"
@@ -135,36 +142,44 @@ const Elections = () => {
     <div
       className="pt-3"
       style={{
-         minHeight: "100vh",
+        minHeight: "100vh",
         backgroundColor: create ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0)",
         backdropFilter: "blur(15px)",
       }}
     >
-      <Row>
-        <Col></Col>
-        <Col md="6">
-          <h1 className="text-center">
-            {create ? "Create A New Election" : "Ongoing Elections"}
-          </h1>
-        </Col>
-        <Col md="3">
-          <Button
-            variant="danger"
-            onClick={(e) => createElectionHandler(e)}
-            disabled={loading}
-          >
-            {create ? "Cancel" : "Create Election"}
-          </Button>
-        </Col>
-      </Row>
-      <br />
-      {create ? (
-        createForm
+      {startLoading ? (
+        <SpinnerBar />
       ) : (
-        <Container>
-          {electionsData &&
-            electionsData.map((d) => <ElectionCard data={d} key={d.name} />)}
-        </Container>
+        <div>
+          <Row>
+            <Col></Col>
+            <Col md="6">
+              <h1 className="text-center">
+                {create ? "Create A New Election" : "Ongoing Elections"}
+              </h1>
+            </Col>
+            <Col md="3">
+              <Button
+                variant="danger"
+                onClick={(e) => createElectionHandler(e)}
+                disabled={loading}
+              >
+                {create ? "Cancel" : "Create Election"}
+              </Button>
+            </Col>
+          </Row>
+          <br />
+          {create ? (
+            createForm
+          ) : (
+            <Container>
+              {electionsData &&
+                electionsData.map((d) => (
+                  <ElectionCard data={d} key={d.name} />
+                ))}
+            </Container>
+          )}
+        </div>
       )}
     </div>
   );

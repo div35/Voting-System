@@ -9,6 +9,8 @@ import {
   Spinner,
 } from "react-bootstrap";
 import web3 from "../web3.js";
+import { PieChart, Pie, Legend, Tooltip } from "recharts";
+import SpinnerBar from "./CustomSpinner.js";
 const compiledElection = require("../ethereum/build/Election.json");
 
 const Election = (props) => {
@@ -25,9 +27,18 @@ const Election = (props) => {
   const [region, setRegion] = useState("");
   const [image, setImage] = useState("");
 
+  const [isStarted, setIsStarted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+
   const [electionName, setElectionName] = useState("");
   const [totalVoteCount, setTotalVoteCount] = useState(0);
   const [parties, setParties] = useState([]);
+
+  const [data, setData] = useState([]);
+
+  const [result, setResult] = useState([]);
+
+  const [startLoading, setStartLoading] = useState(false);
 
   const castVoteHandler = (e) => {
     e.preventDefault();
@@ -43,15 +54,22 @@ const Election = (props) => {
   );
 
   useEffect(async () => {
+    setStartLoading(true);
+    setErr(null);
     try {
       await window.ethereum.send("eth_requestAccounts");
-      const accounts = await web3.eth.getAccounts();
 
+      const accounts = await web3.eth.getAccounts();
       const manager = await contract.methods.manager().call();
       if (manager === accounts[0]) {
         setIsManager(true);
       }
-    } catch (err) {}
+    } catch (err) {
+      setErr(err);
+      setTimeout(() => {
+        setErr(null);
+      }, 5000);
+    }
 
     const name = await contract.methods.name().call();
     setElectionName(name);
@@ -61,6 +79,24 @@ const Election = (props) => {
 
     const partiesData = await contract.methods.getParties().call();
     setParties(partiesData);
+
+    setIsStarted(await contract.methods.isStarted().call());
+    const tempComp = await contract.methods.isCompleted().call();
+    setIsCompleted(tempComp);
+    // console.log(tempComp);
+    if (tempComp) {
+      const tempRes = await contract.methods.getResults().call();
+      setResult(tempRes);
+      const tempdata = tempRes.map((r, i) => {
+        return {
+          name: partiesData[i] && partiesData[i].name ? partiesData[i][0] : "",
+          value: +r,
+        };
+      });
+      setData(tempdata);
+    }
+
+    setStartLoading(false);
   }, []);
 
   const addPartyHandler = (e) => {
@@ -68,6 +104,82 @@ const Election = (props) => {
     setErr(null);
     setMessage(null);
     create ? setCreate(false) : setCreate(true);
+  };
+
+  const startElectionHandler = async (e) => {
+    e.preventDefault();
+    setErr(null);
+    setMessage(null);
+    setLoading(true);
+    try {
+      await window.ethereum.send("eth_requestAccounts");
+      const accounts = await web3.eth.getAccounts();
+      const curr = new Date().getTime();
+      const end = +new Date().getTime() + 10 * 24 * 60 * 60 * 1000;
+      await contract.methods.startElection(curr, end).send({
+        from: accounts[0],
+        gas: "3000000",
+      });
+      setIsStarted(true);
+      setLoading(false);
+      setMessage("You Have successfully Started the Election!!!");
+      setTimeout(() => {
+        setMessage(null);
+      }, 10000);
+    } catch (err) {
+      setErr(err.message);
+      setLoading(false);
+
+      setTimeout(() => {
+        setErr(null);
+      }, 10000);
+    }
+  };
+
+  const declareResultHandler = async (e) => {
+    e.preventDefault();
+    setErr(null);
+    setMessage(null);
+    setLoading(true);
+    if (totalVoteCount == 0) {
+      setErr("Total vote count is 0, you can't end it right now.");
+
+      setTimeout(() => {
+        setLoading(false);
+        setErr(null);
+      }, 5000);
+      return;
+    }
+    try {
+      await window.ethereum.send("eth_requestAccounts");
+      const accounts = await web3.eth.getAccounts();
+      await contract.methods.endElection().send({
+        from: accounts[0],
+        gas: "3000000",
+      });
+      setIsCompleted(true);
+      setLoading(false);
+      setMessage("You Have successfully Ended the Election!!!");
+      setTimeout(() => {
+        setMessage(null);
+      }, 10000);
+      const tempRes = await contract.methods.getResults().call();
+      setResult(tempRes);
+      const tempdata = tempRes.map((r, i) => {
+        return {
+          name: parties[i][0],
+          value: +r,
+        };
+      });
+      setData(tempdata);
+    } catch (err) {
+      setErr(err.message);
+      setLoading(false);
+
+      setTimeout(() => {
+        setErr(null);
+      }, 10000);
+    }
   };
 
   const submitFormHandler = async (e) => {
@@ -96,7 +208,6 @@ const Election = (props) => {
 
       setMessage("Party Added Successfully!!");
     } catch (err) {
-      console.log(err);
       setErr(err.message);
     }
     setLoading(false);
@@ -203,9 +314,16 @@ const Election = (props) => {
                 </Col>
               </Row>
             </Form.Group>
-
-            {err ? <p style={{ color: "red" }}>{err}</p> : null}
-            {message ? <p style={{ color: "green" }}>{message}</p> : null}
+            {err ? (
+              <Row>
+                <p style={{ color: "red" }}>{err}</p>
+              </Row>
+            ) : null}
+            {message ? (
+              <Row>
+                <p style={{ color: "#76ff03" }}>{message}</p>
+              </Row>
+            ) : null}
             <Button
               className="m-2"
               variant="primary"
@@ -230,12 +348,32 @@ const Election = (props) => {
       </Row>
     </Container>
   );
+  console.log(data);
+  const chart = (
+    <Row>
+      <Col className=" col d-flex justify-content-center">
+        <PieChart width={450} height={450}>
+          <Pie data={data} cx={200} cy={200} outerRadius={100} fill="#8884d8" />
+          <Pie
+            data={data}
+            cx={200}
+            cy={200}
+            innerRadius={110}
+            outerRadius={130}
+            fill="#82ca9d"
+            label
+          />
+          <Tooltip />
+        </PieChart>
+      </Col>
+    </Row>
+  );
 
   const partiesCards = (
     <Row>
       {parties.map((p, i) => {
         return (
-          <Col className="my-2" key={i}>
+          <Col className="my-2 col d-flex justify-content-center" key={i}>
             <Card style={{ width: "18rem" }}>
               <Card.Img
                 style={{ width: "17rem", height: "17rem", margin: "auto" }}
@@ -248,14 +386,16 @@ const Election = (props) => {
                 <Card.Text>
                   Lead By <b style={{ color: "#e0e0e0" }}> {p.leaderName}</b>
                 </Card.Text>
-                <Button
-                  variant="light"
-                  type="submit"
-                  value={i}
-                  onClick={(e) => castVoteHandler(e)}
-                >
-                  Cast Vote
-                </Button>
+                {isCompleted || !isStarted ? null : (
+                  <Button
+                    variant="light"
+                    type="submit"
+                    value={i}
+                    onClick={(e) => castVoteHandler(e)}
+                  >
+                    Cast Vote
+                  </Button>
+                )}
               </Card.Body>
             </Card>
           </Col>
@@ -273,45 +413,100 @@ const Election = (props) => {
         backdropFilter: "blur(15px)",
       }}
     >
-      <Container>
-        <Row>
-          <Col></Col>
-          <Col md="6">
-            <h1 className="text-center">
-              {create ? "Create A New Election" : electionName}
-            </h1>
-          </Col>
-          <Col md="3">
-            {isManager ? (
-              <Button
-                variant="danger"
-                onClick={(e) => addPartyHandler(e)}
-                disabled={loading}
-              >
-                {create ? "Cancel" : "Add Party"}
-              </Button>
-            ) : null}
-          </Col>
-        </Row>
-        {create ? null : (
-          <Row className="border-bottom rounded my-2 py-2">
-            <Col className="my-1">
-              <h4>Total Votes: {totalVoteCount} votes</h4>
+      {startLoading ? (
+        <SpinnerBar />
+      ) : (
+        <Container>
+          <Row>
+            <Col></Col>
+            <Col md="6">
+              <h1 className="text-center">
+                {create ? "Enroll A Party" : electionName}
+              </h1>
             </Col>
-            <Col></Col>
-            <Col></Col>
-            <Col>
-              {isManager ? (
-                <Button variant="danger" type="submit">
-                  Declare Result
+            <Col md="3">
+              {isStarted ? null : isManager ? (
+                <Button
+                  variant="danger"
+                  onClick={(e) => addPartyHandler(e)}
+                  disabled={loading}
+                >
+                  {create ? "Cancel" : "Add Party"}
                 </Button>
               ) : null}
             </Col>
           </Row>
-        )}
-        <br />
-        {create ? createForm : <Row>{partiesCards}</Row>}
-      </Container>
+
+          {create ? null : (
+            <Row className="border-bottom rounded my-2 py-2">
+              <Col className="my-1">
+                {isStarted ? (
+                  <h4>Total Votes: {totalVoteCount} votes</h4>
+                ) : null}
+              </Col>
+              <Col></Col>
+              <Col></Col>
+              <Col>
+                {isManager ? (
+                  isStarted ? (
+                    isCompleted ? null : (
+                      <Button
+                        variant="danger"
+                        onClick={(e) => declareResultHandler(e)}
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          "Declare Result"
+                        )}
+                      </Button>
+                    )
+                  ) : (
+                    <Button
+                      variant="danger"
+                      onClick={(e) => startElectionHandler(e)}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <Spinner
+                          as="span"
+                          animation="grow"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        "Start Election"
+                      )}
+                    </Button>
+                  )
+                ) : null}
+              </Col>
+            </Row>
+          )}
+          {create ? null : err ? (
+            <Row>
+              <p style={{ color: "red" }}>{err}</p>
+            </Row>
+          ) : null}
+
+          {create ? null : message ? (
+            <Row>
+              <p style={{ color: "#76ff03" }}>{message}</p>
+            </Row>
+          ) : null}
+          <br />
+          {isCompleted && result.length > 0 ? chart : null}
+          {create ? createForm : <Row>{partiesCards}</Row>}
+        </Container>
+      )}
     </div>
   );
 };
