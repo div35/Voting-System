@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
+import Web3 from "web3";
 
 const Login = (props) => {
   const [aadhaar, setaadhaar] = useState("");
   const [otp, setotp] = useState("");
+  const [partyData, setPartyData] = useState(null);
 
   const submitFormHandler = (e) => {
     e.preventDefault();
@@ -14,7 +16,18 @@ const Login = (props) => {
   const index = props.match.params.id;
 
   useEffect(() => {
-  
+    try{
+      const election = new web3.eth.Contract(
+        JSON.parse(JSON.stringify(compiledElection.abi)),
+        address
+      );
+
+      const party = await election.methods.getParty(index).call();
+      setPartyData(party)
+
+    }catch(err){
+
+    }
   }, []);
 
   return (
