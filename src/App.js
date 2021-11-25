@@ -5,6 +5,7 @@ import NavHeading from "./Components/NavHeading";
 import Elections from "./Components/MainScreen";
 import Election from "./Components/Election";
 import SpinnerBar from "./Components/CustomSpinner";
+import NotFound from "./Components/NotFound"
 function App() {
   return (
     <BrowserRouter>
@@ -12,7 +13,7 @@ function App() {
         <NavHeading />
         <Switch>
           <Route path="/:address/verify/:id" component={Login} />
-          <Route path="/spinner" component={SpinnerBar} />
+          <Route path="/notfound" component={NotFound} />
           <Route path="/:id" component={Election} />
           <Route path="/" component={Elections} exact />
           <Redirect to="/" />

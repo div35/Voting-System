@@ -58,7 +58,7 @@ const ElectionCard = (props) => {
       setStart(+(await contract.methods.startedAt().call()));
       setEnd(+(await contract.methods.endAt().call()));
     } catch (err) {
-      props.history.push("/spinner");
+      props.history.push("/notfound");
     }
   }, []);
 
