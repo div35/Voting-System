@@ -22,7 +22,7 @@ const Login = (props) => {
         address
       );
 
-      const party = await election.methods.getParty(index).call();
+      const party = await election.methods.getPartyDetails(index).call();
       setPartyData(party)
 
     }catch(err){
