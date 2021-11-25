@@ -12,8 +12,8 @@ function App() {
         <NavHeading />
         <Switch>
           <Route path="/:address/verify/:id" component={Login} />
-          <Route path="/:id" component={Election} />
           <Route path="/spinner" component={SpinnerBar} />
+          <Route path="/:id" component={Election} />
           <Route path="/" component={Elections} exact />
           <Redirect to="/" />
         </Switch>
