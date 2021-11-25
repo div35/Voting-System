@@ -12,7 +12,6 @@ const SpinnerBar = () => {
         marginTop: "4rem",
       }}
     ></Spinner>
-    
   );
 };
 

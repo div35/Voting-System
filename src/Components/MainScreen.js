@@ -29,7 +29,7 @@ const Elections = (props) => {
       elections = elections.slice().reverse();
       setElectionsData(elections);
     } catch (err) {
-      props.history.push('/spinner')
+      props.history.push('/notfound')
     } finally {
       setStartLoading(false);
     }
