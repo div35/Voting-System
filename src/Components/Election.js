@@ -33,7 +33,7 @@ const Election = (props) => {
   const [electionName, setElectionName] = useState("");
   const [totalVoteCount, setTotalVoteCount] = useState(0);
   const [parties, setParties] = useState([]);
-
+  const [haveData, setHaveData] = useState(false);
   const [data, setData] = useState([]);
 
   const [result, setResult] = useState([]);
@@ -48,15 +48,16 @@ const Election = (props) => {
 
   const address = props.match.params.id;
 
-  const contract = new web3.eth.Contract(
-    JSON.parse(JSON.stringify(compiledElection.abi)),
-    address
-  );
-
   useEffect(async () => {
     setStartLoading(true);
     setErr(null);
+    let contract;
     try {
+      contract = new web3.eth.Contract(
+        JSON.parse(JSON.stringify(compiledElection.abi)),
+        address
+      );
+
       await window.ethereum.send("eth_requestAccounts");
 
       const accounts = await web3.eth.getAccounts();
@@ -71,29 +72,38 @@ const Election = (props) => {
       }, 5000);
     }
 
-    const name = await contract.methods.name().call();
-    setElectionName(name);
+    try {
+      const name = await contract.methods.name().call();
+      setElectionName(name);
 
-    const count = await contract.methods.totalVotes().call();
-    setTotalVoteCount(count);
+      const count = await contract.methods.totalVotes().call();
+      setTotalVoteCount(count);
 
-    const partiesData = await contract.methods.getParties().call();
-    setParties(partiesData);
+      const partiesData = await contract.methods.getParties().call();
+      setParties(partiesData);
 
-    setIsStarted(await contract.methods.isStarted().call());
-    const tempComp = await contract.methods.isCompleted().call();
-    setIsCompleted(tempComp);
-    // console.log(tempComp);
-    if (tempComp) {
-      const tempRes = await contract.methods.getResults().call();
-      setResult(tempRes);
-      const tempdata = tempRes.map((r, i) => {
-        return {
-          name: partiesData[i] && partiesData[i].name ? partiesData[i][0] : "",
-          value: +r,
-        };
-      });
-      setData(tempdata);
+      setIsStarted(await contract.methods.isStarted().call());
+      const tempComp = await contract.methods.isCompleted().call();
+      setIsCompleted(tempComp);
+      // console.log(tempComp);
+      if (tempComp) {
+        const tempRes = await contract.methods.getResults().call();
+        setResult(tempRes);
+        const tempdata = tempRes.map((r, i) => {
+          if (r != 0) setHaveData(true);
+          return {
+            name:
+              partiesData[i] && partiesData[i].name ? partiesData[i][0] : "",
+            value: +r,
+          };
+        });
+        setData(tempdata);
+      }
+    } catch (err) {
+      setErr(err);
+      setTimeout(() => {
+        setErr(null);
+      }, 5000);
     }
 
     setStartLoading(false);
@@ -111,7 +121,12 @@ const Election = (props) => {
     setErr(null);
     setMessage(null);
     setLoading(true);
+    let contract;
     try {
+      contract = new web3.eth.Contract(
+        JSON.parse(JSON.stringify(compiledElection.abi)),
+        address
+      );
       await window.ethereum.send("eth_requestAccounts");
       const accounts = await web3.eth.getAccounts();
       const curr = new Date().getTime();
@@ -141,16 +156,12 @@ const Election = (props) => {
     setErr(null);
     setMessage(null);
     setLoading(true);
-    if (totalVoteCount == 0) {
-      setErr("Total vote count is 0, you can't end it right now.");
-
-      setTimeout(() => {
-        setLoading(false);
-        setErr(null);
-      }, 5000);
-      return;
-    }
+    let contract;
     try {
+      contract = new web3.eth.Contract(
+        JSON.parse(JSON.stringify(compiledElection.abi)),
+        address
+      );
       await window.ethereum.send("eth_requestAccounts");
       const accounts = await web3.eth.getAccounts();
       await contract.methods.endElection().send({
@@ -191,12 +202,11 @@ const Election = (props) => {
       await window.ethereum.send("eth_requestAccounts");
       const accounts = await web3.eth.getAccounts();
 
-      const electionAddress = props.match.params.id;
-      const election = new web3.eth.Contract(
+      const contract = new web3.eth.Contract(
         JSON.parse(JSON.stringify(compiledElection.abi)),
-        electionAddress
+        address
       );
-      await election.methods
+      await contract.methods
         .addParty(partyName, leaderName, memberCount, region, image)
         .send({
           from: accounts[0],
@@ -464,7 +474,7 @@ const Election = (props) => {
                             aria-hidden="true"
                           />
                         ) : (
-                          "Declare Result"
+                          "End Election"
                         )}
                       </Button>
                     )
@@ -503,7 +513,12 @@ const Election = (props) => {
             </Row>
           ) : null}
           <br />
-          {isCompleted && result.length > 0 ? chart : null}
+          {isCompleted && result.length > 0 && haveData ? chart : null}
+          {!haveData ? (
+            <h5 className="mb-4">
+              No vote has been casted in this election!!!
+            </h5>
+          ) : null}
           {create ? createForm : <Row>{partiesCards}</Row>}
         </Container>
       )}

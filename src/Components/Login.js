@@ -10,6 +10,13 @@ const Login = (props) => {
     e.preventDefault();
   };
 
+  const address = props.match.params.address;
+  const index = props.match.params.id;
+
+  useEffect(() => {
+  
+  }, []);
+
   return (
     <div style={{ margin: "2rem" }}>
       <h1 className="text-center mb-4">Log In</h1>

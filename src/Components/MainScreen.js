@@ -6,9 +6,8 @@ import SpinnerBar from "./CustomSpinner.js";
 
 const factoryAddress = "0x959d7419d86f92E9Cccdaa10461a6a47a27B5A3C";
 const compiledFactory = require("../ethereum/build/ElectionFactory.json");
-const compiledElection = require("../ethereum/build/Election.json");
 
-const Elections = () => {
+const Elections = (props) => {
   const [err, setErr] = useState(null);
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -17,19 +16,23 @@ const Elections = () => {
   const [elecName, setElecName] = useState("");
   const [managerName, setManagerName] = useState("");
 
-  const factory = new web3.eth.Contract(
-    JSON.parse(JSON.stringify(compiledFactory.abi)),
-    factoryAddress
-  );
-
   const [startLoading, setStartLoading] = useState(false);
 
   useEffect(async () => {
     setStartLoading(true);
-    let elections = await factory.methods.getElections().call();
-    elections = elections.slice().reverse();
-    setElectionsData(elections);
-    setStartLoading(false);
+    try {
+      const factory = new web3.eth.Contract(
+        JSON.parse(JSON.stringify(compiledFactory.abi)),
+        factoryAddress
+      );
+      let elections = await factory.methods.getElections().call();
+      elections = elections.slice().reverse();
+      setElectionsData(elections);
+    } catch (err) {
+      props.history.push('/spinner')
+    } finally {
+      setStartLoading(false);
+    }
   }, []);
 
   const createElectionHandler = (e) => {
@@ -45,6 +48,11 @@ const Elections = () => {
     setMessage(null);
     setLoading(true);
     try {
+      const factory = new web3.eth.Contract(
+        JSON.parse(JSON.stringify(compiledFactory.abi)),
+        factoryAddress
+      );
+
       await window.ethereum.send("eth_requestAccounts");
       const accounts = await web3.eth.getAccounts();
 

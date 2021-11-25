@@ -40,22 +40,26 @@ const ElectionCard = (props) => {
     );
 
   useEffect(async () => {
-    const address = props.data[0];
+    try {
+      const address = props.data[0];
 
-    const contract = new web3.eth.Contract(
-      JSON.parse(JSON.stringify(compiledElection.abi)),
-      address
-    );
+      const contract = new web3.eth.Contract(
+        JSON.parse(JSON.stringify(compiledElection.abi)),
+        address
+      );
 
-    const partiesData = await contract.methods.getParties().call();
-    setParties(partiesData);
+      const partiesData = await contract.methods.getParties().call();
+      setParties(partiesData);
 
-    setIsStarted(await contract.methods.isStarted().call());
-    setIsCompleted(await contract.methods.isCompleted().call());
+      setIsStarted(await contract.methods.isStarted().call());
+      setIsCompleted(await contract.methods.isCompleted().call());
 
-    setCreated(+(await contract.methods.createdAt().call()));
-    setStart(+(await contract.methods.startedAt().call()));
-    setEnd(+(await contract.methods.endAt().call()));
+      setCreated(+(await contract.methods.createdAt().call()));
+      setStart(+(await contract.methods.startedAt().call()));
+      setEnd(+(await contract.methods.endAt().call()));
+    } catch (err) {
+      props.history.push("/spinner");
+    }
   }, []);
 
   return (
@@ -93,7 +97,7 @@ const ElectionCard = (props) => {
                   <b>
                     {moment(new Date(start)).format("MMMM Do YYYY, h:mm A")}
                   </b>
-                  <br/>
+                  <br />
                   Will End On:{" "}
                   <b>{moment(new Date(end)).format("MMMM Do YYYY, h:mm A")}</b>
                 </p>
@@ -151,7 +155,7 @@ const ElectionCard = (props) => {
                 }}
               >
                 <b>Running</b>
-                &nbsp;  &nbsp;
+                &nbsp; &nbsp;
                 <Spinner
                   as="span"
                   animation="grow"
