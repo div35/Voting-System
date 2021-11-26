@@ -514,7 +514,7 @@ const Election = (props) => {
           ) : null}
           <br />
           {isCompleted && result.length > 0 && haveData ? chart : null}
-          {!haveData ? (
+          {isCompleted && !haveData ? (
             <h5 className="mb-4">
               No vote has been casted in this election!!!
             </h5>
