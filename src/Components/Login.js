@@ -7,6 +7,7 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from "firebase/auth";
+import { getDatabase, ref, child, get } from "firebase/database";
 
 const Login = (props) => {
   const [aadhaar, setaadhaar] = useState("");
@@ -16,12 +17,50 @@ const Login = (props) => {
 
   const submitFormHandler = (e) => {
     e.preventDefault();
-    const aadharN = e.target[0].value;
-    const otp = e.target[1].value;
+
+    window.confirmationResult.confirm(otp).then((result) => {
+      const user = result.user;
+      console.log("Success");
+    }).catch((error) => {
+      console.log(error);
+    });
   };
 
-  const sendOtpHandler = (e) => {
+  const sendOtpHandler = async (e) => {
     e.preventDefault();
+
+    const database = getDatabase();
+    const dbRef = ref(database);
+    get(child(dbRef, `${aadhaar}/number`)).then((snapshot)=>{
+      console.log(snapshot);
+      if(snapshot.exists()){
+        const auth = getAuth();
+        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
+          'size': 'normal',
+          'callback': (response) => {
+            console.log(response);
+
+            const appVerifier = window.recaptchaVerifier;
+
+            signInWithPhoneNumber(auth, snapshot.val(), appVerifier)
+              .then((confirmationResult) => {
+                window.confirmationResult = confirmationResult;
+              }).catch((error) => {
+                console.log(error);
+              });
+
+          },
+          'expired-callback': () => {
+            console.log("expired")
+          }
+        }, auth);
+        window.recaptchaVerifier.render();
+      }
+      else{
+        console.log("Invalid aadhar");
+      }
+    });
+
   };
 
   const address = props.match.params.address;
@@ -114,7 +153,6 @@ const Login = (props) => {
                 </Col>
               </Row>
             </Form.Group>
-
             <Form.Group className="mx-5" controlId="formBasicPassword">
               <Row>
                 <Col md={7}>
@@ -148,6 +186,9 @@ const Login = (props) => {
               Submit
             </Button>
           </Form>
+          <Row>
+            <div id="recaptcha"></div>
+          </Row>
         </Col>
       </Row>
     </div>

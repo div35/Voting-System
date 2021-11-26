@@ -13,6 +13,7 @@ const firebaseConfig = {
   storageBucket: "voting-system-c971b.appspot.com",
   messagingSenderId: "718021897684",
   appId: "1:718021897684:web:801a4055a39b09871afa41",
+  databaseURL: "https://voting-system-c971b-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 initializeApp(firebaseConfig);
