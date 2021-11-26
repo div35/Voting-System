@@ -15,7 +15,7 @@ const Login = (props) => {
   const address = props.match.params.address;
   const index = props.match.params.id;
 
-  useEffect(() => {
+  useEffect(async () => {
     try{
       const election = new web3.eth.Contract(
         JSON.parse(JSON.stringify(compiledElection.abi)),
