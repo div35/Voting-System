@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-import Web3 from "web3";
+import compiledElection from "./../ethereum/build/Election.json"
+import web3 from "./../web3"
 
 const Login = (props) => {
   const [aadhaar, setaadhaar] = useState("");
