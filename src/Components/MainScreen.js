@@ -85,19 +85,20 @@ const Elections = (props) => {
   };
 
   const createForm = (
-    <Container>
+    <Container >
       <Row>
         <Col></Col>
-        <Col className="border rounded py-3 px-4">
+        <Col className="border rounded py-3 px-4 bg-white">
           <Form onSubmit={submitFormHandler}>
             <Form.Group className="mx-3 mt-2 mb-3" controlId="formBasicEmail">
-              <Form.Label>
+              <Form.Label className="text-black">
                 <b>Election Name</b>
               </Form.Label>
               <Row>
                 <Col>
                   {" "}
                   <Form.Control
+                    className="text-black"
                     required
                     type="electionName"
                     placeholder="Enter Name of the Election"
@@ -111,12 +112,13 @@ const Elections = (props) => {
             </Form.Group>
 
             <Form.Group className="mx-3" controlId="formBasicPassword">
-              <Form.Label>
+              <Form.Label className="text-black">
                 <b>Manager Name</b>
               </Form.Label>
               <Row className="mb-3">
                 <Col>
                   <Form.Control
+                    className="text-black"
                     required
                     type="managerName"
                     placeholder="Enter Name of the Manager"

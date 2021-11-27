@@ -64,19 +64,14 @@ const ElectionCard = (props) => {
 
   return (
     <Container>
-      <Row className="border rounded py-2 my-4">
+      <Row className="border rounded py-2 my-4 bg-card">
         <Col></Col>
         <Col md="6">
           <Row>
             <h2
               style={{
-                backgroundColor: "#f3ec78",
-                backgroundImage: "linear-gradient(45deg, #f3ec78, #af4261)",
-                backgroundSize: "100%",
-                WebkitBackgroundClip: "text",
-                MozBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                MoxTextFillColor: "transparent",
+                WebkitTextFillColor: "#fcb045",
+                MoxTextFillColor: "#fcb045",
               }}
             >
               {props.data.name}
@@ -128,7 +123,7 @@ const ElectionCard = (props) => {
             </Button>
           </NavLink>
         </Col>
-        <Col>
+        <Col className="mt-1">
           {isStarted ? (
             isCompleted ? (
               <span

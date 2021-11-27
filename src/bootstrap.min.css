@@ -11074,3 +11074,12 @@ body {
 .modal-content .text-muted {
   color: rgba(255, 255, 255, 0.7) !important;
 }
+.form-control{
+  border-color: black;
+}
+.form-control:focus{
+  border-color: blue;
+}
+.bg-card{
+  background-color: #7986cb;
+}

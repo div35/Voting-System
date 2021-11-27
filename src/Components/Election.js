@@ -38,6 +38,7 @@ const Election = (props) => {
   const [data, setData] = useState([]);
 
   const [result, setResult] = useState([]);
+  const [winningParty, setWinningParty] = useState(null);
 
   const [startLoading, setStartLoading] = useState(false);
 
@@ -90,8 +91,13 @@ const Election = (props) => {
       if (tempComp) {
         const tempRes = await contract.methods.getResults().call();
         setResult(tempRes);
+        var max = 0;
         const tempdata = tempRes.map((r, i) => {
           if (r != 0) setHaveData(true);
+          if (r > max) {
+            max = r;
+            setWinningParty(partiesData[i]);
+          }
           return {
             name:
               partiesData[i] && partiesData[i].name ? partiesData[i][0] : "",
@@ -367,18 +373,84 @@ const Election = (props) => {
     </Container>
   );
   // console.log(data);
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const COLORS = [
+    "#336699",
+    "#99CCFF",
+    "#999933",
+    "#666699",
+    "#CC9933",
+    "#006666",
+    "#3399FF",
+    "#993300",
+    "#CCCC99",
+    "#666666",
+    "#FFCC66",
+    "#6699CC",
+    "#663366",
+    "#9999CC",
+    "#CCCCCC",
+    "#669999",
+    "#CCCC66",
+    "#CC6600",
+    "#9999FF",
+    "#0066CC",
+    "#99CCCC",
+    "#999999",
+    "#FFCC00",
+    "#009999",
+    "#99CC33",
+    "#FF9900",
+    "#999966",
+    "#66CCCC",
+    "#339966",
+    "#CCCC33",
+    "#003f5c",
+    "#665191",
+    "#a05195",
+    "#d45087",
+    "#2f4b7c",
+    "#f95d6a",
+    "#ff7c43",
+    "#ffa600",
+    "#EF6F6C",
+    "#465775",
+    "#56E39F",
+    "#59C9A5",
+    "#5B6C5D",
+    "#0A2342",
+    "#2CA58D",
+    "#84BC9C",
+    "#CBA328",
+    "#F46197",
+    "#DBCFB0",
+    "#545775",
+  ];
+
   const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+    index,
+  }) => {
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-    if(data[index].value==0){
+    if (data[index].value == 0) {
       return null;
     }
     return (
-      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+      >
         {`${data[index].name}`}
       </text>
     );
@@ -386,10 +458,21 @@ const Election = (props) => {
   const chart = (
     <Row>
       <Col className=" col d-flex justify-content-center">
-        <PieChart width={450} height={450}>
-          <Pie data={data} cx={200} cy={200} outerRadius={130} fill="#8884d8" label={renderCustomizedLabel} labelLine={false}>
+        <PieChart width={320} height={400}>
+          <Pie
+            data={data}
+            cx={150}
+            cy={200}
+            outerRadius={150}
+            fill="#8884d8"
+            label={renderCustomizedLabel}
+            labelLine={false}
+          >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
             ))}
           </Pie>
           <Tooltip />
@@ -542,13 +625,46 @@ const Election = (props) => {
             </Row>
           ) : null}
           <br />
-          {isCompleted && result.length > 0 && haveData ? chart : null}
+          {isCompleted && result.length > 0 && haveData && winningParty ? (
+            <Row>
+              <Col><h5>Results</h5>{chart}</Col>
+              <Col>
+                <Row className="justify-content-center"><h5>Winning Party</h5></Row>
+                <Row>
+                  <Col className="my-2 col d-flex justify-content-center">
+                    <Card style={{ width: "18rem" }}>
+                      <Card.Img
+                        style={{
+                          width: "17rem",
+                          height: "17rem",
+                          margin: "auto",
+                        }}
+                        variant="top"
+                        src={winningParty.image}
+                        className="p-2"
+                      />
+                      <Card.Body>
+                        <Card.Title>{winningParty.name}</Card.Title>
+                        <Card.Text>
+                          Lead By{" "}
+                          <b style={{ color: "#e0e0e0" }}>
+                            {" "}
+                            {winningParty.leaderName}
+                          </b>
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          ) : null}
           {isCompleted && !haveData ? (
             <h5 className="mb-4">
               No vote has been casted in this election!!!
             </h5>
           ) : null}
-          {create ? createForm : <Row>{partiesCards}</Row>}
+          {create ? createForm : <Row className="mt-2">{partiesCards}</Row>}
         </Container>
       )}
     </div>
