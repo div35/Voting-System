@@ -14,6 +14,7 @@ const Login = (props) => {
   const [otp, setotp] = useState("");
   const [partyData, setPartyData] = useState(null);
   const [err, setErr] = useState(null);
+  const [isDisable, setIsDisable] = useState(false);
 
   const submitFormHandler = (e) => {
     e.preventDefault();
@@ -31,42 +32,46 @@ const Login = (props) => {
 
   const sendOtpHandler = async (e) => {
     e.preventDefault();
+    setIsDisable(false);
+    try {
+      const database = getDatabase();
+      const dbRef = ref(database);
+      get(child(dbRef, `${aadhaar}/number`)).then((snapshot) => {
+        console.log(snapshot);
+        if (snapshot.exists()) {
+          const auth = getAuth();
+          window.recaptchaVerifier = new RecaptchaVerifier(
+            "recaptcha",
+            {
+              size: "normal",
+              callback: (response) => {
+                console.log(response);
 
-    const database = getDatabase();
-    const dbRef = ref(database);
-    get(child(dbRef, `${aadhaar}/number`)).then((snapshot) => {
-      console.log(snapshot);
-      if (snapshot.exists()) {
-        const auth = getAuth();
-        window.recaptchaVerifier = new RecaptchaVerifier(
-          "recaptcha",
-          {
-            size: "normal",
-            callback: (response) => {
-              console.log(response);
+                const appVerifier = window.recaptchaVerifier;
 
-              const appVerifier = window.recaptchaVerifier;
-
-              signInWithPhoneNumber(auth, snapshot.val(), appVerifier)
-                .then((confirmationResult) => {
-                  window.confirmationResult = confirmationResult;
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
+                signInWithPhoneNumber(auth, snapshot.val(), appVerifier)
+                  .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    setIsDisable(true);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+              },
+              "expired-callback": () => {
+                console.log("expired");
+              },
             },
-            "expired-callback": () => {
-              console.log("expired");
-            },
-          },
-          auth
-        );
-        console.log("HIHI");
-        window.recaptchaVerifier.render();
-      } else {
-        console.log("Invalid aadhar");
-      }
-    });
+            auth
+          );
+          window.recaptchaVerifier.render();
+        } else {
+          console.log("Invalid aadhar");
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const address = props.match.params.address;
@@ -187,8 +192,12 @@ const Login = (props) => {
                     }}
                   />
                 </Col>
-                <Col md={5} className="mt-2">
-                  <div  id="recaptcha"></div>
+                <Col
+                  md={5}
+                  className="mt-2"
+                  style={{ display: isDisable ? "none" : "inline" }}
+                >
+                  <div id="recaptcha"></div>
                 </Col>
               </Row>
             </Form.Group>
