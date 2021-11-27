@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Container, Form, Row, Col, Button, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  Row,
+  Col,
+  Button,
+  Spinner,
+  Image,
+} from "react-bootstrap";
 import ElectionCard from "./ElectionCard";
 import web3 from "../web3.js";
 import SpinnerBar from "./CustomSpinner.js";
 
-const factoryAddress = "0x959d7419d86f92E9Cccdaa10461a6a47a27B5A3C";
+const factoryAddress = "0xd222BD4814f192D7194122CDB2716BF67fe6D65E";
 const compiledFactory = require("../ethereum/build/ElectionFactory.json");
 
 const Elections = (props) => {
@@ -29,7 +37,7 @@ const Elections = (props) => {
       elections = elections.slice().reverse();
       setElectionsData(elections);
     } catch (err) {
-      props.history.push('/notfound')
+      props.history.push("/notfound");
     } finally {
       setStartLoading(false);
     }
@@ -66,8 +74,9 @@ const Elections = (props) => {
       let elections = await factory.methods.getElections().call();
       elections = elections.slice().reverse();
       setElectionsData(elections);
-
       setMessage("Election Created Successfully!!");
+      setElecName("");
+      setManagerName("");
     } catch (err) {
       console.log(err);
       setErr(err.message);
@@ -181,6 +190,13 @@ const Elections = (props) => {
             createForm
           ) : (
             <Container>
+              {electionsData && electionsData.length == 0 ? (
+                <Image
+                  className="rounded"
+                  style={{ width: "50%" }}
+                  src="https://assets.materialup.com/uploads/805362d3-e9d6-4aa7-b314-ed9dde22558b/preview.gif"
+                />
+              ) : null}
               {electionsData &&
                 electionsData.map((d) => (
                   <ElectionCard data={d} key={d.name} />

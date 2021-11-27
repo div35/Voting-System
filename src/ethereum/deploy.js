@@ -8,7 +8,7 @@ const Web3 = require('web3');
 const compiledFactory = require('./build/ElectionFactory.json');
 
 const provider = new HDWalletProvider(
-    '',
+    'parent harbor mercy suggest violin turtle era corn champion cost melody scrap',
     'https://rinkeby.infura.io/v3/78b1532a1f4c48deb702c0c2ccc93c89'
 );
 

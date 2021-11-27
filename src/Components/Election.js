@@ -7,6 +7,7 @@ import {
   Col,
   Card,
   Spinner,
+  Image,
 } from "react-bootstrap";
 import web3 from "../web3.js";
 import { PieChart, Pie, Legend, Tooltip } from "recharts";
@@ -140,14 +141,14 @@ const Election = (props) => {
       setMessage("You Have successfully Started the Election!!!");
       setTimeout(() => {
         setMessage(null);
-      }, 10000);
+      }, 5000);
     } catch (err) {
       setErr(err.message);
       setLoading(false);
 
       setTimeout(() => {
         setErr(null);
-      }, 10000);
+      }, 5000);
     }
   };
 
@@ -173,12 +174,13 @@ const Election = (props) => {
       setMessage("You Have successfully Ended the Election!!!");
       setTimeout(() => {
         setMessage(null);
-      }, 10000);
+      }, 5000);
       const tempRes = await contract.methods.getResults().call();
       setResult(tempRes);
       const tempdata = tempRes.map((r, i) => {
+        if (r != 0) setHaveData(true);
         return {
-          name: parties[i][0],
+          name: parties[i] && parties[i].name ? parties[i][0] : "",
           value: +r,
         };
       });
@@ -189,7 +191,7 @@ const Election = (props) => {
 
       setTimeout(() => {
         setErr(null);
-      }, 10000);
+      }, 5000);
     }
   };
 
@@ -217,6 +219,12 @@ const Election = (props) => {
       setParties(partiesData);
 
       setMessage("Party Added Successfully!!");
+
+      setPartyName("");
+      setLeaderName("");
+      setImage("");
+      setMemberCount(0);
+      setRegion("");
     } catch (err) {
       setErr(err.message);
     }
@@ -379,40 +387,52 @@ const Election = (props) => {
     </Row>
   );
 
-  const partiesCards = (
-    <Row>
-      {parties.map((p, i) => {
-        return (
-          <Col className="my-2 col d-flex justify-content-center" key={i}>
-            <Card style={{ width: "18rem" }}>
-              <Card.Img
-                style={{ width: "17rem", height: "17rem", margin: "auto" }}
-                variant="top"
-                src={p.image}
-                className="p-2"
-              />
-              <Card.Body>
-                <Card.Title>{p.name}</Card.Title>
-                <Card.Text>
-                  Lead By <b style={{ color: "#e0e0e0" }}> {p.leaderName}</b>
-                </Card.Text>
-                {isCompleted || !isStarted ? null : (
-                  <Button
-                    variant="light"
-                    type="submit"
-                    value={i}
-                    onClick={(e) => castVoteHandler(e)}
-                  >
-                    Cast Vote
-                  </Button>
-                )}
-              </Card.Body>
-            </Card>
-          </Col>
-        );
-      })}
-    </Row>
-  );
+  let partiesCards =
+    parties && parties.length > 0 ? (
+      <Row>
+        {parties.map((p, i) => {
+          return (
+            <Col className="my-2 col d-flex justify-content-center" key={i}>
+              <Card style={{ width: "18rem" }}>
+                <Card.Img
+                  style={{ width: "17rem", height: "17rem", margin: "auto" }}
+                  variant="top"
+                  src={p.image}
+                  className="p-2"
+                />
+                <Card.Body>
+                  <Card.Title>{p.name}</Card.Title>
+                  <Card.Text>
+                    Lead By <b style={{ color: "#e0e0e0" }}> {p.leaderName}</b>
+                  </Card.Text>
+                  {isCompleted || !isStarted ? null : (
+                    <Button
+                      variant="light"
+                      type="submit"
+                      value={i}
+                      onClick={(e) => castVoteHandler(e)}
+                    >
+                      Cast Vote
+                    </Button>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          );
+        })}
+      </Row>
+    ) : (
+      <Row>
+        <Col></Col>
+        <Col>
+          <Image
+            className="rounded"
+            src="https://assets.materialup.com/uploads/805362d3-e9d6-4aa7-b314-ed9dde22558b/preview.gif"
+          />
+        </Col>
+        <Col></Col>
+      </Row>
+    );
 
   return (
     <div
@@ -450,9 +470,7 @@ const Election = (props) => {
           {create ? null : (
             <Row className="border-bottom rounded my-2 py-2">
               <Col className="my-1">
-                {isStarted ? (
-                  <h4>Total Votes: {totalVoteCount} votes</h4>
-                ) : null}
+                {isStarted ? <h4>{totalVoteCount} Vote(s)</h4> : null}
               </Col>
               <Col></Col>
               <Col></Col>
@@ -482,7 +500,7 @@ const Election = (props) => {
                     <Button
                       variant="danger"
                       onClick={(e) => startElectionHandler(e)}
-                      disabled={loading}
+                      disabled={loading || parties.length < 2}
                     >
                       {loading ? (
                         <Spinner
