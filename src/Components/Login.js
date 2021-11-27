@@ -18,12 +18,15 @@ const Login = (props) => {
   const submitFormHandler = (e) => {
     e.preventDefault();
 
-    window.confirmationResult.confirm(otp).then((result) => {
-      const user = result.user;
-      console.log("Success");
-    }).catch((error) => {
-      console.log(error);
-    });
+    window.confirmationResult
+      .confirm(otp)
+      .then((result) => {
+        const user = result.user;
+        console.log("Success");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const sendOtpHandler = async (e) => {
@@ -31,36 +34,39 @@ const Login = (props) => {
 
     const database = getDatabase();
     const dbRef = ref(database);
-    get(child(dbRef, `${aadhaar}/number`)).then((snapshot)=>{
+    get(child(dbRef, `${aadhaar}/number`)).then((snapshot) => {
       console.log(snapshot);
-      if(snapshot.exists()){
+      if (snapshot.exists()) {
         const auth = getAuth();
-        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
-          'size': 'normal',
-          'callback': (response) => {
-            console.log(response);
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          "recaptcha",
+          {
+            size: "normal",
+            callback: (response) => {
+              console.log(response);
 
-            const appVerifier = window.recaptchaVerifier;
+              const appVerifier = window.recaptchaVerifier;
 
-            signInWithPhoneNumber(auth, snapshot.val(), appVerifier)
-              .then((confirmationResult) => {
-                window.confirmationResult = confirmationResult;
-              }).catch((error) => {
-                console.log(error);
-              });
-
+              signInWithPhoneNumber(auth, snapshot.val(), appVerifier)
+                .then((confirmationResult) => {
+                  window.confirmationResult = confirmationResult;
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            },
+            "expired-callback": () => {
+              console.log("expired");
+            },
           },
-          'expired-callback': () => {
-            console.log("expired")
-          }
-        }, auth);
+          auth
+        );
+        console.log("HIHI");
         window.recaptchaVerifier.render();
-      }
-      else{
+      } else {
         console.log("Invalid aadhar");
       }
     });
-
   };
 
   const address = props.match.params.address;
@@ -147,6 +153,7 @@ const Login = (props) => {
                     variant="primary"
                     type="submit"
                     onClick={(e) => sendOtpHandler(e)}
+                    disabled={aadhaar.length == 12 ? false : true}
                   >
                     Send OTP
                   </Button>
@@ -180,15 +187,16 @@ const Login = (props) => {
                     }}
                   />
                 </Col>
+                <Col md={5} className="mt-2">
+                  <div  id="recaptcha"></div>
+                </Col>
               </Row>
             </Form.Group>
             <Button className="m-4" variant="primary" type="submit">
               Submit
             </Button>
           </Form>
-          <Row>
-            <div id="recaptcha"></div>
-          </Row>
+          <Row></Row>
         </Col>
       </Row>
     </div>
