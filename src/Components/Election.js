@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-bootstrap";
 import web3 from "../web3.js";
-import { PieChart, Pie, Legend, Tooltip } from "recharts";
+import { PieChart, Pie, Legend, Tooltip, Cell } from "recharts";
 import SpinnerBar from "./CustomSpinner.js";
 const compiledElection = require("../ethereum/build/Election.json");
 
@@ -367,20 +367,31 @@ const Election = (props) => {
     </Container>
   );
   // console.log(data);
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const RADIAN = Math.PI / 180;
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    if(data[index].value==0){
+      return null;
+    }
+    return (
+      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+        {`${data[index].name}`}
+      </text>
+    );
+  };
   const chart = (
     <Row>
       <Col className=" col d-flex justify-content-center">
         <PieChart width={450} height={450}>
-          <Pie data={data} cx={200} cy={200} outerRadius={100} fill="#8884d8" />
-          <Pie
-            data={data}
-            cx={200}
-            cy={200}
-            innerRadius={110}
-            outerRadius={130}
-            fill="#82ca9d"
-            label
-          />
+          <Pie data={data} cx={200} cy={200} outerRadius={130} fill="#8884d8" label={renderCustomizedLabel} labelLine={false}>
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
           <Tooltip />
         </PieChart>
       </Col>
