@@ -17,14 +17,30 @@ const Login = (props) => {
   const [err, setErr] = useState(null);
   const [isDisable, setIsDisable] = useState(false);
 
-  const submitFormHandler = (e) => {
+  const submitFormHandler = async (e) => {
     e.preventDefault();
 
     window.confirmationResult
       .confirm(otp)
-      .then((result) => {
+      .then( async (result) => {
         const user = result.user;
-        console.log("Success");
+        try{
+          const election = new web3.eth.Contract(
+            JSON.parse(JSON.stringify(compiledElection.abi)),
+            address
+          );
+    
+          await window.ethereum.send("eth_requestAccounts");
+    
+          const accounts = await web3.eth.getAccounts();
+          await election.methods.castVote(aadhaar, index).send({
+            from: accounts[0],
+            gas: '3000000'
+          });
+          console.log("Voted");
+        }catch(err){
+
+        }
       })
       .catch((error) => {
         console.log(error);
