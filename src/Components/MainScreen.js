@@ -78,7 +78,7 @@ const Elections = (props) => {
       setElecName("");
       setManagerName("");
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       setErr(err.message);
     }
     setLoading(false);

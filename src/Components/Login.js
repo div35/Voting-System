@@ -111,7 +111,7 @@ const Login = (props) => {
                   });
               },
               "expired-callback": () => {
-                console.log("Session Expired");
+                setErr("Session Expired");
               },
             },
             auth
@@ -146,7 +146,7 @@ const Login = (props) => {
             setErr(err.message);
           }
         } else {
-          console.log("Invalid Aadhar Number");
+          setErr("Invalid Aadhar Number");
         }
       });
     } catch (err) {

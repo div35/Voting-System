@@ -366,7 +366,7 @@ const Election = (props) => {
       </Row>
     </Container>
   );
-  console.log(data);
+  // console.log(data);
   const chart = (
     <Row>
       <Col className=" col d-flex justify-content-center">
