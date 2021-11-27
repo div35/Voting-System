@@ -24,7 +24,7 @@ const Election = (props) => {
 
   const [partyName, setPartyName] = useState("");
   const [leaderName, setLeaderName] = useState("");
-  const [memberCount, setMemberCount] = useState(0);
+  const [memberCount, setMemberCount] = useState(null);
   const [region, setRegion] = useState("");
   const [image, setImage] = useState("");
 
@@ -241,16 +241,17 @@ const Election = (props) => {
     <Container className="pb-3">
       <Row>
         <Col></Col>
-        <Col className="border rounded py-3 px-4">
+        <Col className="border rounded py-3 px-4 bg-white">
           <Form onSubmit={submitFormHandler}>
             <Form.Group className="mx-3 mt-2 mb-3" controlId="formBasicEmail">
-              <Form.Label>
+              <Form.Label className="text-black">
                 <b>Party Name</b>
               </Form.Label>
               <Row>
                 <Col>
                   {" "}
                   <Form.Control
+                    className="text-black"
                     required
                     type="partyName"
                     placeholder="Enter Party Name"
@@ -264,12 +265,13 @@ const Election = (props) => {
             </Form.Group>
 
             <Form.Group className="mx-3" controlId="formBasicPassword">
-              <Form.Label>
+              <Form.Label className="text-black">
                 <b>Candidate Name</b>
               </Form.Label>
               <Row className="mb-3">
                 <Col>
                   <Form.Control
+                    className="text-black"
                     required
                     type="leaderName"
                     placeholder="Enter Name of the Candidate"
@@ -283,12 +285,13 @@ const Election = (props) => {
             </Form.Group>
 
             <Form.Group className="mx-3" controlId="formBasicURL">
-              <Form.Label>
+              <Form.Label className="text-black">
                 <b>Image URL</b>
               </Form.Label>
               <Row className="mb-3">
                 <Col>
                   <Form.Control
+                    className="text-black"
                     required
                     type="imageURL"
                     placeholder="Enter Party's Logo URL"
@@ -302,12 +305,13 @@ const Election = (props) => {
             </Form.Group>
 
             <Form.Group className="mx-3" controlId="formBasicCount">
-              <Form.Label>
+              <Form.Label className="text-black">
                 <b>Total Number of Members</b>
               </Form.Label>
               <Row className="mb-3">
                 <Col>
                   <Form.Control
+                    className="text-black"
                     required
                     type="count"
                     placeholder="Enter Total Number of Members in Your Party"
@@ -321,7 +325,7 @@ const Election = (props) => {
             </Form.Group>
 
             <Form.Group className="mx-3" controlId="formBasicRegion">
-              <Form.Label>
+              <Form.Label className="text-black">
                 <b>Region</b>
               </Form.Label>
               <Row className="mb-3">

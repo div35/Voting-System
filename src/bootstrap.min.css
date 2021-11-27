@@ -11080,6 +11080,9 @@ body {
 .form-control:focus{
   border-color: blue;
 }
+.form-control::placeholder{
+  color: grey;
+}
 .bg-card{
   background-color: #7986cb;
 }
