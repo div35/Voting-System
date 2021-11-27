@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 import { getDatabase, ref, child, get } from "firebase/database";
 
+
 const Login = (props) => {
   const [aadhaar, setaadhaar] = useState("");
   const [otp, setotp] = useState("");
@@ -30,6 +31,7 @@ const Login = (props) => {
       });
   };
 
+  let rendered = false;
   const sendOtpHandler = async (e) => {
     e.preventDefault();
     setIsDisable(false);
@@ -41,12 +43,12 @@ const Login = (props) => {
         if (snapshot.exists()) {
           const auth = getAuth();
           window.recaptchaVerifier = new RecaptchaVerifier(
-            "recaptcha",
+            "send-otp-btn",
             {
-              size: "normal",
+              size: "invisible",
               callback: (response) => {
                 console.log(response);
-
+                rendered = true;
                 const appVerifier = window.recaptchaVerifier;
 
                 signInWithPhoneNumber(auth, snapshot.val(), appVerifier)
@@ -56,6 +58,7 @@ const Login = (props) => {
                   })
                   .catch((error) => {
                     console.log(error);
+                    // grecaptcha.reset(window.recaptchaWidgetId);
                   });
               },
               "expired-callback": () => {
@@ -64,7 +67,26 @@ const Login = (props) => {
             },
             auth
           );
-          window.recaptchaVerifier.render();
+          try{
+            if(!rendered){
+              window.recaptchaVerifier.verify().then((widgetId) => {
+                window.recaptchaWidgetId = widgetId;
+              });
+            }else{
+              const appVerifier = window.recaptchaVerifier;
+
+              signInWithPhoneNumber(auth, snapshot.val(), appVerifier)
+                .then((confirmationResult) => {
+                  window.confirmationResult = confirmationResult;
+                  setIsDisable(true);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }
+          }catch(err){
+
+          }
         } else {
           console.log("Invalid aadhar");
         }
@@ -187,6 +209,7 @@ const Login = (props) => {
                     required
                     placeholder="Enter OTP"
                     value={otp}
+                    id="send-otp-btn"
                     onChange={(e) => {
                       setotp(e.target.value);
                     }}
