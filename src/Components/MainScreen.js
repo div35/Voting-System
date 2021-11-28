@@ -12,7 +12,7 @@ import ElectionCard from "./ElectionCard";
 import web3 from "../web3.js";
 import SpinnerBar from "./CustomSpinner.js";
 
-const factoryAddress = "0xd222BD4814f192D7194122CDB2716BF67fe6D65E";
+const factoryAddress = "0x91Ae7591C0Cb7af3fD1A28106F80Fc3c4D061CD9";
 const compiledFactory = require("../ethereum/build/ElectionFactory.json");
 
 const Elections = (props) => {
