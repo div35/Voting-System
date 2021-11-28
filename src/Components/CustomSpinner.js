@@ -1,5 +1,5 @@
 import React from "react";
-import { Spinner } from "react-bootstrap";
+import { Spinner, Image } from "react-bootstrap";
 const SpinnerBar = () => {
   return (
     <Spinner
@@ -12,6 +12,7 @@ const SpinnerBar = () => {
         marginTop: "4rem",
       }}
     ></Spinner>
+   
   );
 };
 

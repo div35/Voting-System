@@ -51,6 +51,7 @@ const Election = (props) => {
   const address = props.match.params.id;
 
   useEffect(async () => {
+    window.scroll(0, 0); 
     setStartLoading(true);
     setErr(null);
     let contract;
@@ -488,6 +489,7 @@ const Election = (props) => {
   let partiesCards =
     parties && parties.length > 0 ? (
       <Row>
+        <h3 className="text-center">All Parties</h3>
         {parties.map((p, i) => {
           return (
             <Col className="my-2 col d-flex justify-content-center" key={i}>
@@ -630,45 +632,56 @@ const Election = (props) => {
           ) : null}
           <br />
           {isCompleted && result.length > 0 && haveData && winningParty ? (
-            <Row>
-              <Col><h5>Results</h5>{chart}</Col>
-              <Col>
-                <Row className="justify-content-center"><h5>Winning Party</h5></Row>
-                <Row>
-                  <Col className="my-2 col d-flex justify-content-center">
-                    <Card style={{ width: "18rem" }}>
-                      <Card.Img
+            <div className="border-bottom rounded pb-4">
+              <Row>
+                <Col>
+                  <h5>Results</h5>
+                  {chart}
+                </Col>
+                <Col>
+                  <h5>Winning Party</h5>
+                  <Row>
+                    <Col className=" col d-flex justify-content-center">
+                      <Card
                         style={{
-                          width: "17rem",
-                          height: "17rem",
-                          margin: "auto",
+                          width: "18rem",
+                          backgroundColor: "rgba(255, 255, 255, 0.2)",
+                          backgroundImage: `url("https://cliply.co/wp-content/uploads/2019/02/371812620_FIREWORKS_400.gif")`,
                         }}
-                        variant="top"
-                        src={winningParty.image}
-                        className="p-2"
-                      />
-                      <Card.Body>
-                        <Card.Title>{winningParty.name}</Card.Title>
-                        <Card.Text>
-                          Lead By{" "}
-                          <b style={{ color: "#e0e0e0" }}>
-                            {" "}
-                            {winningParty.leaderName}
-                          </b>
-                        </Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
+                      >
+                        <Card.Img
+                          style={{
+                            width: "17rem",
+                            height: "17rem",
+                            margin: "auto",
+                          }}
+                          variant="top"
+                          src={winningParty.image}
+                          className="p-2"
+                        />
+                        <Card.Body>
+                          <Card.Title>{winningParty.name}</Card.Title>
+                          <Card.Text>
+                            Lead By{" "}
+                            <b style={{ color: "#e0e0e0" }}>
+                              {" "}
+                              {winningParty.leaderName}
+                            </b>
+                          </Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </div>
           ) : null}
           {isCompleted && !haveData ? (
             <h5 className="mb-4">
               No vote has been casted in this election!!!
             </h5>
           ) : null}
-          {create ? createForm : <Row className="mt-2">{partiesCards}</Row>}
+          {create ? createForm : <Row className="my-2">{partiesCards}</Row>}
         </Container>
       )}
     </div>

@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Form, Button, Card, Row, Col, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  Button,
+  Card,
+  Row,
+  Col,
+  Spinner,
+} from "react-bootstrap";
 import compiledElection from "./../ethereum/build/Election.json";
 import web3 from "./../web3";
 import {
@@ -17,11 +25,13 @@ const Login = (props) => {
   const [message, setMessage] = useState(null);
   const [isDisable, setIsDisable] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(0);
 
   const address = props.match.params.address;
   const index = props.match.params.id;
 
   useEffect(async () => {
+    window.scroll(0, 0); 
     try {
       const election = new web3.eth.Contract(
         JSON.parse(JSON.stringify(compiledElection.abi)),
@@ -139,7 +149,7 @@ const Login = (props) => {
                   }, 5000);
                 })
                 .catch((err) => {
-                  setErr(err.message);
+                  setErr("Please Reload before requestion another OTP!!!");
                 });
             }
           } catch (err) {
@@ -184,124 +194,99 @@ const Login = (props) => {
           ) : null}
         </Col>
         <Col xs={12} md={8}>
-          <Container className="bg-white rounded pb-5 pt-2">
-          <br />
-          <br />
-          <h2 className="text-center mb-4 text-black">Enter Credentials</h2>
-          <Form>
-            <Form.Group className="mx-5 mb-3" controlId="formBasicEmail">
-              <Row>
-                <Col md={7}>
-                  <Form.Label
-                    className="text-black"
-                    // style={{
-                    //   backgroundColor: "#f3ec78",
-                    //   backgroundImage:
-                    //     "linear-gradient(45deg, #f3ec78, #af4261)",
-                    //   backgroundSize: "100%",
-                    //   WebkitBackgroundClip: "text",
-                    //   MozBackgroundClip: "text",
-                    //   WebkitTextFillColor: "transparent",
-                    //   MoxTextFillColor: "transparent",
-                    // }}
-                  >
-                    Aadhaar Number
-                  </Form.Label>
-                  <Form.Control
-                    className="text-black"
-                    type="aadhaar"
-                    required
-                    placeholder="Enter Aadhaar Number (eg. 012345678901)"
-                    value={aadhaar}
-                    onChange={(e) => {
-                      setaadhaar(e.target.value);
-                    }}
-                  />
-                </Col>
+          <Container className="bg-white rounded pb-5 pt-2" style={{maxHeight:"29rem"}}>
+            <br />
+            <br />
+            <h2 className="text-center mb-4 text-black">Enter Credentials</h2>
+            <Form>
+              <Form.Group className="mx-5 mb-1" controlId="formBasicEmail">
+                <Row>
+                  <Col md={7}>
+                    <Form.Label className="text-black">
+                      Aadhaar Number
+                    </Form.Label>
+                    <Form.Control
+                      className="text-black"
+                      type="aadhaar"
+                      required
+                      placeholder="Enter Aadhaar Number (eg. 012345678901)"
+                      value={aadhaar}
+                      onChange={(e) => {
+                        setaadhaar(e.target.value);
+                      }}
+                    />
+                  </Col>
 
-                <Col md={5} className="mt-3">
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    onClick={(e) => sendOtpHandler(e)}
-                    disabled={aadhaar.length == 12 ? false : true}
-                  >
-                    Send OTP
-                  </Button>
-                </Col>
-              </Row>
-            </Form.Group>
-            <Form.Group className="mx-5" controlId="formBasicPassword">
-              <Row>
-                <Col md={7}>
-                  <Form.Label
-                    className="text-black"
-                    // style={{
-                    //   backgroundColor: "#f3ec78",
-                    //   backgroundImage:
-                    //     "linear-gradient(45deg, #f3ec78, #af4261)",
-                    //   backgroundSize: "100%",
-                    //   WebkitBackgroundClip: "text",
-                    //   MozBackgroundClip: "text",
-                    //   WebkitTextFillColor: "transparent",
-                    //   MoxTextFillColor: "transparent",
-                    // }}
-                  >
-                    OTP
-                  </Form.Label>
-                  <Form.Control
-                    className="text-black"
-                    type="otp"
-                    required
-                    placeholder="Enter OTP"
-                    value={otp}
-                    id="send-otp-btn"
-                    onChange={(e) => {
-                      setotp(e.target.value);
-                    }}
-                  />
-                </Col>
-                <Col
-                  md={5}
-                  className="mt-2"
-                  // style={{ display: isDisable ? "none" : "inline" }}
-                >
-                  {/* <div id="recaptcha"></div> */}
-                  <Button
-              className="mt-2"
-              variant="primary"
-              type="submit"
-              onClick={(e)=>{submitFormHandler(e)}}
-              disabled={loading}
-            >
-              {loading ? (
-                <Spinner
-                  as="span"
-                  animation="grow"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
+                  <Col md={5} className="mt-3">
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      onClick={(e) => sendOtpHandler(e)}
+                      disabled={aadhaar.length == 12 ? false : true}
+                    >
+                      Send OTP
+                    </Button>
+                  </Col>
+                </Row>
+              </Form.Group>
+              <Form.Group className="mx-5" controlId="formBasicPassword">
+                <Row>
+                  <Col md={7}>
+                    <Form.Label className="text-black">OTP</Form.Label>
+                    <Form.Control
+                      className="text-black"
+                      type="otp"
+                      required
+                      placeholder="Enter OTP"
+                      value={otp}
+                      id="send-otp-btn"
+                      onChange={(e) => {
+                        setotp(e.target.value);
+                      }}
+                    />
+                  </Col>
+                  <Col md={5} className="mt-2">
+                    <Button
+                      className="mt-2"
+                      variant="primary"
+                      type="submit"
+                      onClick={(e) => {
+                        submitFormHandler(e);
+                      }}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <Spinner
+                          as="span"
+                          animation="grow"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        "Cast Vote"
+                      )}
+                    </Button>
+                  </Col>
+                </Row>
+              </Form.Group>
+              <br />
+              {err ? (
+                <Row>
+                  <p style={{ color: "red" }}>{err}</p>
+                </Row>
               ) : (
-                "Cast Vote"
+                <Row><p></p></Row>
               )}
-            </Button>
-                </Col>
-              </Row>
-            </Form.Group>
-            <br/>
-            {err ? (
-              <Row>
-                <p style={{ color: "red" }}>{err}</p>
-              </Row>
-            ) : null}
 
-            {message ? (
-              <Row>
-                <p style={{ color: "#76ff03" }}>{message}</p>
-              </Row>
-            ) : null}
-          </Form>
+              {message ? (
+                <Row>
+                  <p style={{ color: "#76ff03" }}>{message}</p>
+                </Row>
+              ) : (
+                <Row><p></p></Row>
+              )}
+            </Form>
           </Container>
         </Col>
       </Row>

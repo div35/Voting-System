@@ -3,7 +3,9 @@ import React from "react";
 const NotFound = () => {
     return(
         <div>
-            <img style={{width:"100vw", height:"100vh"}} src="https://i.pinimg.com/564x/fd/78/c4/fd78c47f2a009df65b5b5a46f4437399.jpg"/>
+            <br/>
+            <br/>
+            <img style={{width:"50vw", borderRadius:"1rem"}} src="https://cdn.dribbble.com/users/547471/screenshots/3063720/not_found.gif"/>
         </div>
     )
 }
