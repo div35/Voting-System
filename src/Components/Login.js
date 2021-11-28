@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Card, Row, Col, Spinner } from "react-bootstrap";
+import { Container, Form, Button, Card, Row, Col, Spinner } from "react-bootstrap";
 import compiledElection from "./../ethereum/build/Election.json";
 import web3 from "./../web3";
 import {
@@ -156,7 +156,7 @@ const Login = (props) => {
 
   return (
     <div style={{ padding: "2rem" }}>
-      <Row>
+      <Row className="mt-3">
         <Col
           xs={12}
           md={4}
@@ -184,28 +184,31 @@ const Login = (props) => {
           ) : null}
         </Col>
         <Col xs={12} md={8}>
+          <Container className="bg-white rounded pb-5 pt-2">
           <br />
           <br />
-          <h2 className="text-center mb-4">Enter Credentials</h2>
-          <Form onSubmit={submitFormHandler}>
+          <h2 className="text-center mb-4 text-black">Enter Credentials</h2>
+          <Form>
             <Form.Group className="mx-5 mb-3" controlId="formBasicEmail">
               <Row>
                 <Col md={7}>
                   <Form.Label
-                    style={{
-                      backgroundColor: "#f3ec78",
-                      backgroundImage:
-                        "linear-gradient(45deg, #f3ec78, #af4261)",
-                      backgroundSize: "100%",
-                      WebkitBackgroundClip: "text",
-                      MozBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      MoxTextFillColor: "transparent",
-                    }}
+                    className="text-black"
+                    // style={{
+                    //   backgroundColor: "#f3ec78",
+                    //   backgroundImage:
+                    //     "linear-gradient(45deg, #f3ec78, #af4261)",
+                    //   backgroundSize: "100%",
+                    //   WebkitBackgroundClip: "text",
+                    //   MozBackgroundClip: "text",
+                    //   WebkitTextFillColor: "transparent",
+                    //   MoxTextFillColor: "transparent",
+                    // }}
                   >
                     Aadhaar Number
                   </Form.Label>
                   <Form.Control
+                    className="text-black"
                     type="aadhaar"
                     required
                     placeholder="Enter Aadhaar Number (eg. 012345678901)"
@@ -232,20 +235,22 @@ const Login = (props) => {
               <Row>
                 <Col md={7}>
                   <Form.Label
-                    style={{
-                      backgroundColor: "#f3ec78",
-                      backgroundImage:
-                        "linear-gradient(45deg, #f3ec78, #af4261)",
-                      backgroundSize: "100%",
-                      WebkitBackgroundClip: "text",
-                      MozBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      MoxTextFillColor: "transparent",
-                    }}
+                    className="text-black"
+                    // style={{
+                    //   backgroundColor: "#f3ec78",
+                    //   backgroundImage:
+                    //     "linear-gradient(45deg, #f3ec78, #af4261)",
+                    //   backgroundSize: "100%",
+                    //   WebkitBackgroundClip: "text",
+                    //   MozBackgroundClip: "text",
+                    //   WebkitTextFillColor: "transparent",
+                    //   MoxTextFillColor: "transparent",
+                    // }}
                   >
                     OTP
                   </Form.Label>
                   <Form.Control
+                    className="text-black"
                     type="otp"
                     required
                     placeholder="Enter OTP"
@@ -261,7 +266,26 @@ const Login = (props) => {
                   className="mt-2"
                   // style={{ display: isDisable ? "none" : "inline" }}
                 >
-                  <div id="recaptcha"></div>
+                  {/* <div id="recaptcha"></div> */}
+                  <Button
+              className="mt-2"
+              variant="primary"
+              type="submit"
+              onClick={(e)=>{submitFormHandler(e)}}
+              disabled={loading}
+            >
+              {loading ? (
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+              ) : (
+                "Cast Vote"
+              )}
+            </Button>
                 </Col>
               </Row>
             </Form.Group>
@@ -277,26 +301,8 @@ const Login = (props) => {
                 <p style={{ color: "#76ff03" }}>{message}</p>
               </Row>
             ) : null}
-            <Button
-              className="m-4"
-              variant="primary"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? (
-                <Spinner
-                  as="span"
-                  animation="grow"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-              ) : (
-                "Cast Vote"
-              )}
-            </Button>
           </Form>
-          <Row></Row>
+          </Container>
         </Col>
       </Row>
     </div>
