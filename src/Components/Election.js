@@ -332,6 +332,7 @@ const Election = (props) => {
               <Row className="mb-3">
                 <Col>
                   <Form.Control
+                    className="text-black"
                     required
                     type="region"
                     placeholder="Enter Your Region"
